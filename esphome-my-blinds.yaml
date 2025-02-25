@@ -1,0 +1,173 @@
+substitutions:
+  name: blinds
+  friendly_name: Blinds
+  password: "9ca6975a34ebd0d79be17f9fad9c6a75"
+#  cover1_name: "Baie"
+#  cover1_rel_up: GPIO13
+#  cover1_rel_dn: GPIO12
+  cover2_name: "Bucatarie"
+  cover2_rel_up: GPIO27
+  cover2_rel_dn: GPIO14
+  cover3_name: "Living"
+  cover3_rel_up: GPIO25
+  cover3_rel_dn: GPIO26
+
+
+esphome:
+  name: ${name}
+  friendly_name: ${friendly_name}
+  min_version: 2024.6.0
+  name_add_mac_suffix: false
+  project:
+    name: esphome.web
+    version: dev
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+external_components:
+  - source:
+      type: git
+      url: https://github.com/birocorneliu/Venetian-Blinds-Control
+      ref: master
+    components: [venetian_blinds]
+
+# Enable logging
+logger:
+  level: WARN
+
+# Enable Home Assistant API
+api:
+  password: ${password}
+
+# Allow Over-The-Air updates
+ota:
+- platform: esphome
+  password: ${password}
+
+# Allow provisioning Wi-Fi via serial
+improv_serial:
+
+wifi:
+  ssid: "AquaNet"
+  password: "m6d9d9ta"
+  manual_ip:
+    static_ip: 192.168.100.223
+    gateway: 192.168.100.1
+    subnet: 255.255.255.0
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Blinds Fallback Hotspot"
+    password: "m6d9d9ta"
+
+# In combination with the `ap` this allows the user
+# to provision wifi credentials to the device via WiFi AP.
+captive_portal:
+
+dashboard_import:
+  package_import_url: github://esphome/example-configs/esphome-web/esp32.yaml@main
+  import_full_config: true
+
+# Sets up Bluetooth LE (Only on ESP32) to allow the user
+# to provision wifi credentials to the device.
+esp32_improv:
+  authorizer: none
+
+# To have a "next url" for improv serial
+web_server:
+
+
+cover:
+#  - platform: venetian_blinds
+#    name: "${cover1_name}"
+#    id: cover1
+#    open_action:
+#      - switch.turn_on: relay11
+#    open_duration: 61770ms
+#    close_action:
+#      - switch.turn_on: relay12
+#    close_duration: 62200ms
+#    tilt_duration: 1650ms
+#    stop_action:
+#      - switch.turn_off: relay11
+#      - switch.turn_off: relay12
+
+  - platform: venetian_blinds
+    name: "${cover2_name}"
+    id: cover2
+    open_action:
+      - switch.turn_on: relay21
+    open_duration: 31900ms
+    close_action:
+      - switch.turn_on: relay22
+    close_duration: 31500ms
+    tilt_duration: 1650ms
+    stop_action:
+      - switch.turn_off: relay21
+      - switch.turn_off: relay22
+
+  - platform: venetian_blinds
+    name: "${cover3_name}"
+    id: cover3
+    open_action:
+      - switch.turn_on: relay31
+    open_duration: 60770ms
+    #open_duration: 62770ms
+    close_action:
+      - switch.turn_on: relay32
+    close_duration: 59200ms
+    #close_duration: 61200ms
+    tilt_duration: 1650ms
+    stop_action:
+      - switch.turn_off: relay31
+      - switch.turn_off: relay32
+
+switch:
+#  - id: relay11
+#    platform: gpio
+#    pin: $cover1_rel_up
+#    icon: "mdi:electric-switch"
+#    inverted: yes
+#    restore_mode: RESTORE_DEFAULT_OFF
+#    interlock: [relay12]
+#  - id: relay12
+#    platform: gpio
+#    pin: $cover1_rel_dn
+#    icon: "mdi:electric-switch"
+#    inverted: yes
+#    restore_mode: RESTORE_DEFAULT_OFF
+#    interlock: [relay11]
+
+  - id: relay21
+    platform: gpio
+    pin: $cover2_rel_up
+    icon: "mdi:electric-switch"
+    inverted: yes
+    restore_mode: RESTORE_DEFAULT_OFF
+    interlock: [relay22]
+  - id: relay22
+    platform: gpio
+    pin: $cover2_rel_dn
+    icon: "mdi:electric-switch"
+    inverted: yes
+    restore_mode: RESTORE_DEFAULT_OFF
+    interlock: [relay21]
+
+  - id: relay31
+    platform: gpio
+    pin: $cover3_rel_up
+    icon: "mdi:electric-switch"
+    inverted: yes
+    restore_mode: RESTORE_DEFAULT_OFF
+    interlock: [relay32]
+  - id: relay32
+    platform: gpio
+    pin: $cover3_rel_dn
+    icon: "mdi:electric-switch"
+    inverted: yes
+    restore_mode: RESTORE_DEFAULT_OFF
+    interlock: [relay31]
+    
